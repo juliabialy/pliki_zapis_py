@@ -1,3 +1,4 @@
+
 '''
 
 def obliczenia_dla_danych(dane):
@@ -96,20 +97,36 @@ Cezar_Zad2()
 # do zad 3, jeśli w pliku wystąpi słowo więcej niż 1 raz pisze obok ilość
 # tych słów
 
-def Zad4():
-    with open('in_4.txt', 'r') as f:
-        slowa = f.read().split()
-        slownik = set()
-        try:
-            with open("dict1.txt",'r') as f:
-                slownik = set(line.strip() for line in f)
+def wczytaj_slownik(nazwa_pliku):
+    slownik = {}
+    with open(nazwa_pliku, 'r') as plik:
+            for linia in plik:
+                wyraz, liczba_wystapien = linia.strip().split()
+                slownik[wyraz.lower()] = int(liczba_wystapien)
+    return slownik
 
-        except FileNotFoundError:
-            with open('dict1.txt', 'w') as f:
-              pass
-        slownik.update(word.lower() for word in slowa)
+def zapisz_slownik(slownik, nazwa_pliku):
+    with open(nazwa_pliku, 'w') as plik:
+        for wyraz, liczba_wystapien in slownik.items():
+            plik.write(f"{wyraz} {liczba_wystapien}\n")
 
-        with open('dict1.txt','w') as f:
-            for slowo in sorted(slownik):
-                f.write(slowo+'\n')
-                
+def analizuj_dane(tekst, slownik):
+    slowa = tekst.split()
+    for wyraz in slowa:
+        wyraz = wyraz.lower().strip('.,?!()[]{}:;')
+        slownik[wyraz] = slownik.get(wyraz, 0) + 1
+
+
+nazwa_pliku_in = 'in_4.txt'
+nazwa_pliku_dict = 'dict1.txt'
+
+slownik = wczytaj_slownik(nazwa_pliku_dict)
+
+with open(nazwa_pliku_in, 'r') as plik_in:
+    tekst = plik_in.read()
+    analizuj_dane(tekst, slownik)
+
+zapisz_slownik(slownik, nazwa_pliku_dict)
+
+for wyraz, liczba_wystapien in slownik.items():
+    print(f"{wyraz}: {liczba_wystapien}")
